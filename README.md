@@ -1,6 +1,6 @@
 # Security Debt Calculator
 
-[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://ZlatGod.github.io/security-debt-calculator)
+[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://zlatgod.github.io/security-debt-calculator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Quantifying Security Debt in Multi-Tool Data Governance Architectures**  
@@ -8,7 +8,7 @@
 
 ## 🚀 Quick Start
 
-**[Try the Live Calculator →](https://yourusername.github.io/security-debt-calculator)**
+**[Try the Live Calculator →](https://zlatgod.github.io/security-debt-calculator)**
 
 ## 📊 What is This?
 
@@ -42,7 +42,7 @@ This calculator implements the framework from:
 ## 🛠️ How to Use
 
 ### For Business Users
-1. Visit the [live calculator](https://yourusername.github.io/security-debt-calculator)
+1. Visit the [live calculator](https://zlatgod.github.io/security-debt-calculator)
 2. Enter your organization's parameters:
    - Number of data governance tools
    - API integrations per tool
@@ -161,9 +161,9 @@ MIT License - feel free to use in your organization
 
 ## 👤 Author
 
-**[Your Name]**
-- LinkedIn: [Your Profile]
-- Email: your.email@example.com
+**Yashvardhan Rathi**
+- LinkedIn: [www.linkedin.com/in/yashvardhanrathi]
+- Email: yashrathi10@gmail.com
 - Research Focus: Data Governance, Cloud Security, Compliance
 
 ## 🙏 Acknowledgments
