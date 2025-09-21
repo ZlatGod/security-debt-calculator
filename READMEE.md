@@ -1,6 +1,6 @@
 # Security Debt Calculator
 
-[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://yourusername.github.io/security-debt-calculator)
+[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://ZlatGod.github.io/security-debt-calculator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Quantifying Security Debt in Multi-Tool Data Governance Architectures**  
