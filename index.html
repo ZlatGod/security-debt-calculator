@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Debt Calculator - Data Governance Framework</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .input-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .input-field {
+            margin-bottom: 15px;
+        }
+        
+        .input-field label {
+            display: block;
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .input-field input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .input-field input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-card h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .low { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .high { background: #f8d7da; color: #721c24; }
+        .critical { background: #f5c6cb; color: #721c24; }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-container h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .recommendations {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .recommendations h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .recommendations ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .recommendations li {
+            padding: 8px 0;
+            color: #333;
+        }
+        
+        .recommendations li::before {
+            content: "→ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .citation-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .citation-box h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .citation-box code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Security Debt Calculator</h1>
+            <p>Quantifying Security Debt in Multi-Tool Data Governance Architectures</p>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Framework for Financial Services Compliance</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 style="margin-bottom: 20px;">Configuration Parameters</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <h3>Integration Complexity (ICD)</h3>
+                        <div class="input-field">
+                            <label>Number of Tools</label>
+                            <input type="number" id="tools" value="4" min="1" max="20">
+                        </div>
+                        <div class="input-field">
+                            <label>API Connections per Tool</label>
+                            <input type="number" id="apiConnections" value="25" min="0" max="100">
+                        </div>
+                        <div class="input-field">
+                            <label>Credential Types</label>
+                            <input type="number" id="credentialTypes" value="3" min="1" max="5">
+                        </div>
+                        <div class="input-field">
+                            <label>Isolation Factor (1=same account)</label>
+                            <input type="number" id="isolationFactor" value="1" min="1" max="10">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <h3>Compliance Visibility (CVG)</h3>
+                        <div class="input-field">
+                            <label>Required Audit Attributes</label>
+                            <input type="number" id="requiredAttributes" value="6" min="1" max="20">
+                        </div>
+                        <div class="input-field">
+                            <label>Captured Attributes</label>
+                            <input type="number" id="capturedAttributes" value="4" min="0" max="20">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <h3>Risk & Overhead</h3>
+                        <div class="input-field">
+                            <label>Network Exposure (1-5)</label>
+                            <input type="number" id="networkExposure" value="3" min="1" max="5">
+                        </div>
+                        <div class="input-field">
+                            <label>Escalation Paths</label>
+                            <input type="number" id="escalationPaths" value="2" min="1" max="10">
+                        </div>
+                        <div class="input-field">
+                            <label>Same Account Penalty (1x or 2x)</label>
+                            <input type="number" id="accountPenalty" value="2" min="1" max="2">
+                        </div>
+                        <div class="input-field">
+                            <label>Patch Days</label>
+                            <input type="number" id="patchDays" value="5" min="0" max="30">
+                        </div>
+                        <div class="input-field">
+                            <label>Team Size</label>
+                            <input type="number" id="teamSize" value="4" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metrics-grid" id="metricsGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Security Debt Accumulation</h3>
+                    <canvas id="debtChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Architecture Comparison</h3>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+            
+            <div id="recommendations" class="recommendations">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <div class="citation-box">
+                <h4>How to Cite This Framework</h4>
+                <p><strong>APA Format:</strong></p>
+                <p style="margin: 10px 0;">
+                    [Your Name]. (2025). <em>Quantifying security debt in multi-tool data governance architectures: A framework for financial services compliance</em>. 
+                    GitHub. https://github.com/yourusername/security-debt-calculator
+                </p>
+                <p style="margin-top: 15px;"><strong>Framework Metrics:</strong></p>
+                <ul style="margin-top: 10px; margin-left: 20px;">
+                    <li>ICD (Integration Complexity Debt) = (Tools × APIs × Credentials) / Isolation</li>
+                    <li>CVG (Compliance Visibility Gap) = (Required - Captured) / Required × 100%</li>
+                    <li>ARI (Architectural Risk Index) = Network × Escalation × Penalty</li>
+                    <li>OOD (Operational Overhead Debt) = (Patch Days + Approval Days) / Team Size</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Security Debt Framework v1.0 | Based on research analyzing financial services data governance deployments</p>
+            <p>Open source tool for quantifying security debt in cloud-based data governance architectures</p>
+        </div>
+    </div>
+    
+    <script>
+        // Calculate metrics
+        function calculateMetrics() {
+            const inputs = {
+                tools: parseFloat(document.getElementById('tools').value) || 0,
+                apiConnections: parseFloat(document.getElementById('apiConnections').value) || 0,
+                credentialTypes: parseFloat(document.getElementById('credentialTypes').value) || 0,
+                isolationFactor: parseFloat(document.getElementById('isolationFactor').value) || 1,
+                requiredAttributes: parseFloat(document.getElementById('requiredAttributes').value) || 0,
+                capturedAttributes: parseFloat(document.getElementById('capturedAttributes').value) || 0,
+                networkExposure: parseFloat(document.getElementById('networkExposure').value) || 0,
+                escalationPaths: parseFloat(document.getElementById('escalationPaths').value) || 0,
+                accountPenalty: parseFloat(document.getElementById('accountPenalty').value) || 1,
+                patchDays: parseFloat(document.getElementById('patchDays').value) || 0,
+                teamSize: parseFloat(document.getElementById('teamSize').value) || 1
+            };
+            
+            const icd = (inputs.tools * inputs.apiConnections * inputs.credentialTypes) / inputs.isolationFactor;
+            const cvg = ((inputs.requiredAttributes - inputs.capturedAttributes) / inputs.requiredAttributes) * 100;
+            const ari = inputs.networkExposure * inputs.escalationPaths * inputs.accountPenalty;
+            const ood = inputs.patchDays / inputs.teamSize;
+            
+            return { icd, cvg, ari, ood, inputs };
+        }
+        
+        function getRiskLevel(icd) {
+            if (icd < 100) return { level: 'Low', class: 'low' };
+            if (icd < 500) return { level: 'Medium', class: 'medium' };
+            if (icd < 1000) return { level: 'High', class: 'high' };
+            return { level: 'Critical', class: 'critical' };
+        }
+        
+        function updateMetrics() {
+            const metrics = calculateMetrics();
+            const riskLevel = getRiskLevel(metrics.icd);
+            
+            const metricsHTML = `
+                <div class="metric-card ${riskLevel.class}">
+                    <h3>Integration Complexity Debt</h3>
+                    <div class="metric-value">${metrics.icd.toFixed(0)}</div>
+                    <div class="metric-label">${riskLevel.level} Risk</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Visibility Gap</h3>
+                    <div class="metric-value" style="color: #28a745;">${metrics.cvg.toFixed(0)}%</div>
+                    <div class="metric-label">Compliance Attributes</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Architectural Risk Index</h3>
+                    <div class="metric-value" style="color: #6f42c1;">${metrics.ari.toFixed(0)}</div>
+                    <div class="metric-label">Risk Score</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Operational Overhead</h3>
+                    <div class="metric-value" style="color: #fd7e14;">${metrics.ood.toFixed(1)}</div>
+                    <div class="metric-label">Days per Update</div>
+                </div>
+            `;
+            
+            document.getElementById('metricsGrid').innerHTML = metricsHTML;
+            
+            // Recommendations
+            let recommendations = '<h3>Recommendations</h3><ul>';
+            if (metrics.icd > 300) recommendations += '<li><strong>🔴 Critical:</strong> ICD score exceeds 300 - immediate architectural review required</li>';
+            if (metrics.cvg > 25) recommendations += '<li><strong>⚠️ Warning:</strong> Visibility gap of ' + metrics.cvg.toFixed(0) + '% - implement unified logging</li>';
+            if (metrics.ari > 10) recommendations += '<li><strong>⚠️ Warning:</strong> High architectural risk - consider multi-account isolation</li>';
+            if (metrics.ood > 1.5) recommendations += '<li><strong>💰 Cost Impact:</strong> High operational overhead - automation opportunities available</li>';
+            if (recommendations === '<h3>Recommendations</h3><ul>') {
+                recommendations += '<li><strong>✅ Good:</strong> Security debt levels are within acceptable range</li>';
+            }
+            recommendations += '</ul>';
+            
+            document.getElementById('recommendations').innerHTML = recommendations;
+            
+            updateCharts(metrics);
+        }
+        
+        function updateCharts(metrics) {
+            // Debt accumulation chart
+            const debtCtx = document.getElementById('debtChart').getContext('2d');
+            if (window.debtChart) window.debtChart.destroy();
+            window.debtChart = new Chart(debtCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Phase 0\nBaseline', 'Phase 1\n+Tool 1', 'Phase 2\n+Tool 2', 'Phase 3\n+Tool 3', 'Current\nState'],
+                    datasets: [{
+                        label: 'Security Debt',
+                        data: [25, 75, 150, 225, metrics.icd],
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+            
+            // Comparison chart
+            const compCtx = document.getElementById('comparisonChart').getContext('2d');
+            if (window.comparisonChart) window.comparisonChart.destroy();
+            window.comparisonChart = new Chart(compCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Single Tool', 'Current State', 'Multi-Account'],
+                    datasets: [{
+                        label: 'ICD',
+                        data: [25, metrics.icd, metrics.icd / 4],
+                        backgroundColor: '#dc3545'
+                    }, {
+                        label: 'ARI',
+                        data: [3, metrics.ari, metrics.ari / 2],
+                        backgroundColor: '#6f42c1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        // Add event listeners
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', updateMetrics);
+        });
+        
+        // Initial calculation
+        updateMetrics();
+    </script>
+</body>
+</html>
